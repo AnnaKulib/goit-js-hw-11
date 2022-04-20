@@ -11,6 +11,7 @@ const {formEl, galleryEl, buttonLoadMore} = getRefs();
 const gallerySimplelightbox = new SimpleLightbox('.gallery a', { captions: true, captionDelay: 250, captionsData: 'alt' });
 
 formEl.addEventListener('submit', onFormSubmit);
+buttonLoadMore.addEventListener('click', onLoadMoreClick);
 
 buttonLoadMore.classList.add('is-hidden');
 
@@ -34,23 +35,21 @@ function createMarkup(data) {
 
     if(data.totalHits === 0) {
             Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
-        return;
+            return;
 
     } else if(imageApiService.page === 2) {
         let totalHits = data.totalHits;
         Notiflix.Notify.info(`Hooray! We found ${totalHits} images.`);
+            buttonLoadMore.classList.remove('is-hidden');
     
     } else if(data.totalHits !== 0 && data.hits.length === 0) {
         Notiflix.Notify.warning("We're sorry, but you've reached the end of search results.");
+        buttonLoadMore.classList.add('is-hidden');
     }
 
     galleryEl.insertAdjacentHTML('beforeend', image(data.hits));
-    buttonLoadMore.classList.remove('is-hidden');
-    
     gallerySimplelightbox.refresh();
 };
-
-buttonLoadMore.addEventListener('click', onLoadMoreClick);
 
 function onLoadMoreClick() {
     imageApiService.getImages().then(createMarkup);
