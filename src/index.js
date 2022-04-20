@@ -7,10 +7,12 @@ import image from './templates/image.hbs';
 import { getRefs } from './js/refs';
 
 const imageApiService = new ImageApiService();
-const {formEl, galleryEl} = getRefs();
+const {formEl, galleryEl, buttonLoadMore} = getRefs();
 const gallerySimplelightbox = new SimpleLightbox('.gallery a', { captions: true, captionDelay: 250, captionsData: 'alt' });
 
 formEl.addEventListener('submit', onFormSubmit);
+
+buttonLoadMore.classList.add('is-hidden');
 
 function onFormSubmit(event) {
     event.preventDefault();
@@ -43,7 +45,14 @@ function createMarkup(data) {
     }
 
     galleryEl.insertAdjacentHTML('beforeend', image(data.hits));
-
+    buttonLoadMore.classList.remove('is-hidden');
+    
     gallerySimplelightbox.refresh();
 };
 
+buttonLoadMore.addEventListener('click', onLoadMoreClick);
+
+function onLoadMoreClick() {
+    imageApiService.getImages().then(createMarkup);
+
+}
